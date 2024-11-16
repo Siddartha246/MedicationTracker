@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Signup Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0'); /* Background image URL */
+            background-size: cover; /* Ensures the image covers the entire background */
+            background-position: center; /* Centers the background image */
+        }
+
+        .container {
+            width: 300px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for the container */
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .container h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Make it a block element */
+            text-align: center; /* Center text */
+        }
+
+        .toggle-link {
+            color: #007BFF;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 15px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="formTitle">Login</h2>
+
+        <!-- Login Form -->
+        <div class="form-container" id="loginForm">
+            <input type="text" class="input-field" placeholder="Username" required>
+            <input type="password" class="input-field" placeholder="Password" required>
+            <a class="btn" href="home page mts.html">Login</a> <!-- Use an anchor tag for login -->
+            <span class="toggle-link" onclick="toggleForm()">Don't have an account? Sign up</span>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="form-container" id="signupForm">
+            <input type="text" class="input-field" placeholder="Username" required>
+            <input type="email" class="input-field" placeholder="Email" required>
+            <input type="password" class="input-field" placeholder="Password" required>
+            <input type="password" class="input-field" placeholder="Confirm Password" required>
+            <a class="btn" href="home page mts.html">Login</a> 
+            <span class="toggle-link" onclick="toggleForm()">Already have an account? Login</span>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const formTitle = document.getElementById('formTitle');
+
+        function toggleForm() {
+            if (loginForm.classList.contains('active')) {
+                loginForm.classList.remove('active');
+                signupForm.classList.add('active');
+                formTitle.textContent = 'Sign Up';
+            } else {
+                signupForm.classList.remove('active');
+                loginForm.classList.add('active');
+                formTitle.textContent = 'Login';
+            }
+        }
+
+        // Show the login form by default
+        loginForm.classList.add('active');
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+function markAsTaken(medication) {
+        // Hide the notification bar
+        hideNotification();
+    
+        // Find the medication item in the list and add a tick mark
+        const listItems = document.querySelectorAll('.medication-item');
+        listItems.forEach(item => {
+            if (item.textContent.includes(medication.name) && item.textContent.includes(medication.date)) {
+                item.innerHTML += ' ✔️'; // Add the tick mark next to the medication entry
+            }
+        });
+    }
+    

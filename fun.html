@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Tracking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        .medication-list, .medication-item {
+            margin-top: 15px;
+        }
+        .medication-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        /* Notification bar styling */
+        .notification-bar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            border-radius: 5px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Medication Tracker</h2>
+        <form id="medication-form">
+            <label for="medication-date">Date:</label>
+            <input type="date" id="medication-date" required>
+
+            <!-- First Time and Dose input -->
+            <label for="medication-time-1">Time 1:</label>
+            <input type="time" id="medication-time-1" required>
+
+            <label for="dose-1">Dose 1:</label>
+            <input type="text" id="dose-1" placeholder="Enter dose" required>
+
+            <!-- Second Time and Dose input -->
+            <label for="medication-time-2">Time 2:</label>
+            <input type="time" id="medication-time-2" required>
+
+            <label for="dose-2">Dose 2:</label>
+            <input type="text" id="dose-2" placeholder="Enter dose" required>
+
+            <!-- Third Time and Dose input -->
+            <label for="medication-time-3">Time 3:</label>
+            <input type="time" id="medication-time-3" required>
+
+            <label for="dose-3">Dose 3:</label>
+            <input type="text" id="dose-3" placeholder="Enter dose" required>
+
+            <button type="submit">Add Medication</button>
+        </form>
+
+        <div class="medication-list" id="medication-list"></div>
+        <button id="back-button">Back</button> <!-- Back Button -->
+
+        <!-- Analysis section -->
+        <h3>Medication Analysis</h3>
+        <div id="analysis-list"></div>
+    </div>
+
+    <!-- Notification bar -->
+    <div class="notification-bar" id="notification-bar">
+        <span id="notification-message">Reminder: Time to take medication!</span>
+        <div class="notification-options">
+            <button onclick="markDose('Submit')">Submit</button>
+            <button onclick="markDose('Skip')">Skip</button>
+        </div>
+    </div>
+
+    <script>
+        let medications = JSON.parse(localStorage.getItem('medications')) || [];
+        let notificationState = JSON.parse(localStorage.getItem('notificationState')) || {}; // Store notification state
+        let doseAnalysis = JSON.parse(localStorage.getItem('doseAnalysis')) || []; // Store analysis details
+
+        // Load saved medication and analysis data on page load
+        window.onload = function() {
+            medications.forEach(medication => addMedicationToDOM(medication));
+            doseAnalysis.forEach(analysis => addAnalysisToDOM(analysis));
+            checkReminders();
+        };
+
+        document.getElementById('medication-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('medication-date').value;
+            const time1 = document.getElementById('medication-time-1').value;
+            const dose1 = document.getElementById('dose-1').value;
+            const time2 = document.getElementById('medication-time-2').value;
+            const dose2 = document.getElementById('dose-2').value;
+            const time3 = document.getElementById('medication-time-3').value;
+            const dose3 = document.getElementById('dose-3').value;
+            const medication = { date, time1, dose1, time2, dose2, time3, dose3 };
+            medications.push(medication);
+
+            // Save medications and notification state
+            localStorage.setItem('medications', JSON.stringify(medications));
+            localStorage.setItem('notificationState', JSON.stringify({}));
+
+            addMedicationToDOM(medication);
+            document.getElementById('medication-form').reset();
+        });
+
+        function addMedicationToDOM(medication) {
+            const list = document.getElementById('medication-list');
+            const item = document.createElement('div');
+            item.classList.add('medication-item');
+            item.innerHTML = `${medication.date} - ${medication.time1} - Dose 1: ${medication.dose1} | ${medication.time2} - Dose 2: ${medication.dose2} | ${medication.time3} - Dose 3: ${medication.dose3}`;
+            list.appendChild(item);
+        }
+
+        function showNotification(message) {
+            const notificationBar = document.getElementById('notification-bar');
+            document.getElementById('notification-message').innerText = message;
+            notificationBar.style.display = 'flex';
+
+            setTimeout(function() {
+                notificationBar.style.display = 'none';
+            }, 30000);
+        }
+
+        function checkReminders() {
+            const now = new Date();
+            const currentDate = now.toISOString().split('T')[0];
+            const currentTime = now.toTimeString().split(' ')[0].slice(0, 5);
+
+            medications.forEach(medication => {
+                if (medication.date === currentDate) {
+                    // Check if the medication's dose time matches the current time
+                    if (medication.time1 === currentTime && !notificationState.time1) {
+                        showNotification(`Reminder: Time to take Dose 1`);
+                        notificationState.time1 = true;
+                    } else if (medication.time2 === currentTime && !notificationState.time2) {
+                        showNotification(`Reminder: Time to take Dose 2`);
+                        notificationState.time2 = true;
+                    } else if (medication.time3 === currentTime && !notificationState.time3) {
+                        showNotification(`Reminder: Time to take Dose 3`);
+                        notificationState.time3 = true;
+                    }
+                }
+            });
+
+            // Save notification state to localStorage
+            localStorage.setItem('notificationState', JSON.stringify(notificationState));
+        }
+
+        function markDose(status) {
+            const now = new Date();
+            const currentDate = now.toISOString().split('T')[0];
+            const currentTime = now.toTimeString().split(' ')[0].slice(0, 5);
+
+            // Find the corresponding medication for the current time
+            medications.forEach(medication => {
+                if (medication.date === currentDate) {
+                    if (medication.time1 === currentTime) {
+                        saveAnalysis(medication, 'Dose 1', status);
+                    } else if (medication.time2 === currentTime) {
+                        saveAnalysis(medication, 'Dose 2', status);
+                    } else if (medication.time3 === currentTime) {
+                        saveAnalysis(medication, 'Dose 3', status);
+                    }
+                }
+            });
+        }
+
+        function saveAnalysis(medication, dose, status) {
+            const analysis = {
+                date: medication.date,
+                dose: dose,
+                status: status
+            };
+
+            doseAnalysis.push(analysis);
+            localStorage.setItem('doseAnalysis', JSON.stringify(doseAnalysis));
+
+            addAnalysisToDOM(analysis);
+        }
+
+        function addAnalysisToDOM(analysis) {
+            const analysisList = document.getElementById('analysis-list');
+            const item = document.createElement('div');
+            item.classList.add('medication-item');
+            item.innerHTML = `Date: ${analysis.date} | ${analysis.dose} - ${analysis.status}`;
+            analysisList.appendChild(item);
+        }
+    </script>
+</body>
+</html>

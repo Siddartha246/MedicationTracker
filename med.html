@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medication Reminder</title>
+  <style>
+    body {
+      background-color:white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .option {
+      background-color:pink;
+      border: 2px solid #333;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .option:hover {
+      background-color: #555;
+    }
+
+    .option input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    .next-button {
+      margin-top: 20px;
+      background-color: #f1c1a1;
+      color: #1a1a1a;
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>How often do you take this medication?</h1>
+    <ul class="options">
+      <li class="option">
+        <input type="radio" id="once-daily" name="frequency" value="once-daily">
+        <label for="once-daily">Once daily</label>
+      </li>
+      <li class="option">
+        <input type="radio" id="twice-daily" name="frequency" value="twice-daily">
+        <label for="twice-daily">Twice daily</label>
+      </li>
+      <li class="option">
+        <input type="radio" id="on-demand" name="frequency" value="on-demand">
+        <label for="on-demand">Thrice Daily</label>
+      </li>
+    </ul>
+    <a class="next-button" id="next-btn" href="#">Next</a>
+  </div>
+
+  <script>
+    const nextButton = document.getElementById("next-btn");
+
+    // Add event listener to radio buttons to dynamically change the link
+    document.querySelectorAll('input[name="frequency"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        if (document.getElementById('once-daily').checked) {
+          nextButton.setAttribute('href', 'mts-2.html');  // Set the link for "Once daily"
+        } else if (document.getElementById('twice-daily').checked) {
+          nextButton.setAttribute('href', 'mts-3.html'); // Set the link for "Twice daily"
+        } else if (document.getElementById('on-demand').checked) {
+          nextButton.setAttribute('href', 'mts-4.html'); // Set the link for "Thrice daily"
+        }
+      });
+    });
+  </script>
+</body>
+</html>

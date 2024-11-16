@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tick and Wrong Mark Example</title>
+<style>
+  .day {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  .tick {
+    color: green;
+    font-weight: bold;
+  }
+  .wrong {
+    color: red;
+    font-weight: bold;
+  }
+  .h1 {
+    font-size: large;
+  }
+  .button {
+    font-size: large;
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  .button:hover {
+    background-color: darkgreen;
+    transform: scale(1.1);
+  }
+</style>
+</head>
+<body>
+  <h1> October </h1>
+  <div id="days">
+    <div class="day" data-date="2024-10-01">2024-10-01</div>
+    <div class="day" data-date="2024-10-02">2024-10-02</div>
+    <div class="day" data-date="2024-10-03">2024-10-03</div>
+    <div class="day" data-date="2024-10-04">2024-10-04</div>
+    <div class="day" data-date="2024-10-05">2024-10-05</div>
+    <div class="day" data-date="2024-10-06">2024-10-06</div>
+    <div class="day" data-date="2024-10-07">2024-10-07</div>
+    <div class="day" data-date="2024-10-08">2024-10-08</div>
+    <div class="day" data-date="2024-10-09">2024-10-09</div>
+    <div class="day" data-date="2024-10-10">2024-10-10</div>
+  </div>
+
+  <h1>November</h1>
+  <div id="days">
+    <div class="day" data-date="2024-11-01">2024-11-01</div>
+    <div class="day" data-date="2024-11-02">2024-11-02</div>
+    <div class="day" data-date="2024-11-03">2024-11-03</div>
+    <div class="day" data-date="2024-11-04">2024-11-04</div>
+    <div class="day" data-date="2024-11-05">2024-11-05</div>
+    <div class="day" data-date="2024-11-06">2024-11-06</div>
+    <div class="day" data-date="2024-11-07">2024-11-07</div>
+    <div class="day" data-date="2024-11-08">2024-11-08</div>
+    <div class="day" data-date="2024-11-09">2024-11-09</div>
+    <div class="day" data-date="2024-11-12">2024-11-12</div>
+  </div>
+
+  <!-- Buttons to mark the date -->
+  <button id="submitButton" class="button">Submit</button>
+  <button id="skipButton" class="button">Skip</button>
+  <button id="nextButton" class="button">Next</button>
+
+  <script>
+    // Function to mark a specific dose with a symbol and style
+    function markDose(date, doseNumber, symbol, className) {
+      const doseElement = document.querySelector(`.day[data-date="${date}"]`);
+      if (doseElement) {
+        let existingText = doseElement.innerHTML.split('<br>'); // Keep previous marks for that dose
+        while (existingText.length < doseNumber) {
+          existingText.push('');
+        }
+        existingText[doseNumber - 1] = symbol;
+        doseElement.innerHTML = `${date}<br>${existingText.join('<br>')}`;
+        doseElement.classList.add(className);
+      } else {
+        alert("Dose element not found.");
+      }
+      
+      // Store missed doses in localStorage
+      const missedDoses = JSON.parse(localStorage.getItem('missedDoses')) || {};
+      if (!missedDoses[date]) {
+        missedDoses[date] = [];
+      }
+      missedDoses[date][doseNumber - 1] = symbol;
+      localStorage.setItem('missedDoses', JSON.stringify(missedDoses));
+    }
+
+    // Function to restore missed doses from localStorage
+    function restoreMissedDoses() {
+      const missedDoses = JSON.parse(localStorage.getItem('missedDoses')) || {};
+      for (const date in missedDoses) {
+        missedDoses[date].forEach((symbol, index) => {
+          if (symbol) {
+            const className = symbol === '❌' ? 'wrong' : 'tick';
+            markDose(date, index + 1, symbol, className);
+          }
+        });
+      }
+    }
+
+    // Event listener for the "Submit" button to add a tick mark for all doses
+    document.getElementById("submitButton").addEventListener("click", function() {
+      const today = new Date().toISOString().split("T")[0];
+      markDose(today, 1, '✅', 'tick');
+      markDose(today, 2, '✅', 'tick');
+      markDose(today, 3, '✅', 'tick');
+    });
+
+    // Event listener for the "Skip" button to mark the missed dose
+    document.getElementById("skipButton").addEventListener("click", function() {
+      const today = new Date().toISOString().split("T")[0];
+      markDose(today, 1, '❌', 'wrong'); // Mark Dose 1 as missed (for example)
+    });
+
+    // Event listener for the "Next" button to check missed doses
+    document.getElementById("nextButton").addEventListener("click", function() {
+      const missedDoses = JSON.parse(localStorage.getItem('missedDoses')) || {};
+      const today = new Date().toISOString().split("T")[0];
+      if (missedDoses[today] && missedDoses[today].includes('❌')) {
+        alert("You missed some doses today!");
+      } else {
+        alert("You did not miss any doses today.");
+      }
+    });
+
+    // Restore missed doses on page load
+    window.addEventListener('load', restoreMissedDoses);
+  </script>
+
+</body>
+</html>

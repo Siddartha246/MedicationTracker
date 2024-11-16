@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Tracking System</title>
+    <style>
+        /* Styling for the medication tracker */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+            margin-left: 200px;
+        }
+        .medication-list, .medication-item {
+            margin-top: 15px;
+        }
+        .medication-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        /* Notification bar styling */
+        .notification-bar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            border-radius: 5px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Appointment Reminder</h2>
+        <form id="medication-form">
+            <label for="medication-name">Your Name:</label>
+            <input type="text" id="medication-name" required>
+
+            <label for="medication-age">Age:</label>
+            <input type="text" id="medication-age" required>
+
+            <label for="medication-date">Date:</label>
+            <input type="date" id="medication-date" required>
+
+            <label for="medication-time">Time:</label>
+            <input type="time" id="medication-time" required>
+
+            <label for="medication-location">Location:</label>
+            <input type="text" id="medication-location" required>
+
+            <label for="medication-ph">Phone:</label>
+            <input type="text" id="medication-ph" required>
+
+            
+
+            <button type="submit">Add Appointment</button>
+        </form>
+        <div class="medication-list" id="medication-list"></div>
+    </div>
+
+    <!-- Notification bar -->
+    <div class="notification-bar" id="notification-bar">
+        <span id="notification-message">Reminder: Time for Appointment to:!</span>
+    </div>
+
+    <script>
+        let medications = [];
+
+        document.getElementById('medication-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('medication-name').value;
+            const age = document.getElementById('medication-age').value;
+            const date = document.getElementById('medication-date').value;
+            const time = document.getElementById('medication-time').value;
+            const location = document.getElementById('medication-location').value;
+            const phone = document.getElementById('medication-ph').value;
+
+            const medication = { name, age, date, time, location, phone};
+            medications.push(medication);
+
+            addMedicationToDOM(medication);
+            document.getElementById('medication-form').reset();
+        });
+
+        function addMedicationToDOM(medication) {
+            const list = document.getElementById('medication-list');
+            const item = document.createElement('div');
+            item.classList.add('medication-item');
+            item.innerHTML = `
+                <strong>${medication.name}</strong> - ${medication.age} - ${medication.date} ${medication.time}<br>
+                Location: ${medication.location} | Phone: ${medication.phone} | Unit: ${medication.unit}
+            `;
+            list.appendChild(item);
+        }
+
+        // Show notification bar
+        function showNotification(message) {
+            const notificationBar = document.getElementById('notification-bar');
+            document.getElementById('notification-message').innerText = message;
+            notificationBar.style.display = 'flex';
+        }
+
+        // Hide notification bar
+        function hideNotification() {
+            document.getElementById('notification-bar').style.display = 'none';
+        }
+
+        // Check for reminders every minute
+        function checkReminders() {
+            const now = new Date();
+            const currentDate = now.toISOString().split('T')[0];
+            const currentTime = now.toTimeString().split(' ')[0].slice(0, 5);
+
+            medications.forEach(medication => {
+                if (medication.date === currentDate && medication.time === currentTime) {
+                    showNotification(`Reminder: Time to take ${medication.name}`);
+                }
+            });
+        }
+
+        // Start the interval to check every minute
+        setInterval(checkReminders, 60000);
+    </script>
+</body>

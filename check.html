@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Test</title>
+</head>
+<body>
+    <h1>Notification Test</h1>
+    <button id="notify-btn">Show Notification</button>
+
+    <script>
+        document.getElementById('notify-btn').addEventListener('click', function() {
+            if (Notification.permission === 'granted') {
+                // If permission is already granted, show the notification
+                new Notification("This is a test notification!");
+            } else if (Notification.permission !== 'denied') {
+                // Request permission if not granted or denied
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        new Notification("This is a test notification!");
+                    } else {
+                        alert('Notification permission denied.');
+                    }
+                });
+            } else {
+                alert('Notification permission is denied.');
+            }
+        });
+    </script>
+</body>
+</html>
